@@ -17,10 +17,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
-import vn.hust.soict.project.iotcommunication.MainActivity;
+import vn.hust.soict.project.iotcommunication.ui.MainActivity;
 import vn.hust.soict.project.iotcommunication.MyApplication;
 import vn.hust.soict.project.iotcommunication.R;
-import vn.hust.soict.project.iotcommunication.data_local.DataLocalManager;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override

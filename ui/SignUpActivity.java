@@ -1,4 +1,4 @@
-package vn.hust.soict.project.iotcommunication;
+package vn.hust.soict.project.iotcommunication.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,11 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import retrofit2.Call;
-import vn.hust.soict.project.iotcommunication.api.ApiService;
-import vn.hust.soict.project.iotcommunication.api.RetrofitInstance;
-import vn.hust.soict.project.iotcommunication.model.HomeList;
-import vn.hust.soict.project.iotcommunication.model.User;
+import vn.hust.soict.project.iotcommunication.R;
 
 public class SignUpActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package vn.hust.soict.project.iotcommunication;
+package vn.hust.soict.project.iotcommunication.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+
+import vn.hust.soict.project.iotcommunication.R;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 private EditText edtSendEmail;

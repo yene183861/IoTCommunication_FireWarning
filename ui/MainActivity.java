@@ -1,4 +1,4 @@
-package vn.hust.soict.project.iotcommunication;
+package vn.hust.soict.project.iotcommunication.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -42,6 +42,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.UnsupportedEncodingException;
 
+import vn.hust.soict.project.iotcommunication.R;
 import vn.hust.soict.project.iotcommunication.model.User;
 import vn.hust.soict.project.iotcommunication.ui.ChangePasswordFragment;
 import vn.hust.soict.project.iotcommunication.ui.HomeFragment;
