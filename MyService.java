@@ -88,19 +88,12 @@ public class MyService extends Service {
                         clientId);
         String topic = "iot_communication";
         MqttConnectOptions options = new MqttConnectOptions();
-//        options.setKeepAliveInterval(60);//seconds
-//        options.setCleanSession(true);
-//        options.setAutomaticReconnect(true);
         options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
         options.setUserName("USERNAME");
-        options.setPassword("PASSWORD".toCharArray());
+        options.setPassword("USERNAME".toCharArray());
 
         try {
-            //IMqttToken token = client.connect(options);
-//            options.setUserName("USERNAME");
-//            options.setPassword("PASSWORD".toCharArray());
             IMqttToken token = client.connect(options);
-            //IMqttToken token = client.connect();
             token.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
@@ -122,31 +115,7 @@ public class MyService extends Service {
             e.printStackTrace();
         }
     }
-//    private void subscribe(){
-//        String topic = "iot_communication";
-//        int qos = 0;
-//        try {
-//            IMqttToken subToken = client.subscribe(topic, qos);
-//            subToken.setActionCallback(new IMqttActionListener() {
-//                @Override
-//                public void onSuccess(IMqttToken asyncActionToken) {
-//                    // The message was published
-////                    Log.e("message", )
-//                    Log.e("receive message", "success");
-//                }
 
-    //                @Override
-//                public void onFailure(IMqttToken asyncActionToken,
-//                                      Throwable exception) {
-//                    // The subscription could not be performed, maybe the user was not
-//                    // authorized to subscribe on the specified topic e.g. using wildcards
-//                    Log.e("receive message", "failed: " + exception);
-//                }
-//            });
-//        } catch (MqttException e) {
-//            e.printStackTrace();
-//        }
-//    }
     public void subscribeMqttChannel(String topicName) {
         try {
             Log.d("mqtt", "mqtt topic name>>>>>>>>" + topicName);
