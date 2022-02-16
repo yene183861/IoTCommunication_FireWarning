@@ -66,7 +66,7 @@ public class SignInActivity extends AppCompatActivity {
                     txtNotification.setVisibility(View.VISIBLE);
                 } else {
                     progressDialog.show();
-                    User user = new User(email, password);
+                    User user = new User(email, password, DataLocalManager.getFCMToken());
                     ApiService apiService = RetrofitInstance.getRetrofitClient1().create(ApiService.class);
                     Call<UserResponse> call = apiService.loginEmail(user);
                     call.enqueue(new Callback<UserResponse>() {
@@ -78,11 +78,8 @@ public class SignInActivity extends AppCompatActivity {
                                 Log.e("login", response.body().getToken());
                                 DataLocalManager.setTokenServer(response.body().getToken());
                                 DataLocalManager.setClientId(response.body().getUser().getId());
-                                Log.e("login", DataLocalManager.getTokenServer());
-                                Log.e("login id", DataLocalManager.getClientId());
-                                //Log.e("login", response.body().getUser().toString());
+                                Log.e("id", DataLocalManager.getClientId());
                                 Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                                intent.putExtra("token", token);
                                 startActivity(intent);
                                 finishAffinity();
                             }else {

@@ -48,7 +48,11 @@ public void setHomeList(List<Home> homeList){
 //                .apply(RequestOptions.centerCropTransform())
 //                .into(holder.imgHome);
 //        if(this.homeList.get(position).getThumbnail() == null){
+        if(position % 2 == 0){
+            holder.imgHome.setImageResource(R.drawable.home);
+        } else {
             holder.imgHome.setImageResource(R.drawable.house);
+        }
 //        } else {
 //            Glide.with(context)
 //                    .load(this.homeList.get(position).getThumbnail())

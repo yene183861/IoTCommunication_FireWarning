@@ -18,6 +18,8 @@ import vn.hust.soict.project.iotcommunication.data_local.DataLocalManager;
 import vn.hust.soict.project.iotcommunication.model.Device;
 import vn.hust.soict.project.iotcommunication.model.DeviceList;
 import vn.hust.soict.project.iotcommunication.model.Home;
+import vn.hust.soict.project.iotcommunication.model.Notification;
+import vn.hust.soict.project.iotcommunication.model.NotificationResponse;
 import vn.hust.soict.project.iotcommunication.model.Room;
 
 public class DeviceListViewModel extends ViewModel {
@@ -34,7 +36,7 @@ public class DeviceListViewModel extends ViewModel {
     }
 
     public void getDeviceList(String id) {
-//        Log.e("callApiGetRoomList", "" + id);
+
         ApiService apiService = RetrofitInstance.getRetrofitClient().create(ApiService.class);
         Call<DeviceList> call = apiService.getDeviceList(DataLocalManager.getTokenServer(), id);
         call.enqueue(new Callback<DeviceList>() {
@@ -99,22 +101,17 @@ public class DeviceListViewModel extends ViewModel {
             call.enqueue(new Callback<Device>() {
                 @Override
                 public void onResponse(Call<Device> call, Response<Device> response) {
-                    if (response.code() == 201) {
+                    if (response.code() == 200) {
                         deviceListLiveData.setValue(mListDevice);
                         Log.e("updateDevice", "update success");
                     } else {
                         try {
-//                            if(response.body() != null) {
-//                                String s = response.body().string();
-//                            }
                             Log.e("updateDevice", "error code: " + response.code() + "error body: " + response.errorBody().string());
                         } catch (IOException e) {
                             e.printStackTrace();
                             Log.e("updateDevice", "error: " + e);
                         }
                     }
-//                    deviceListLiveData.setValue(mListDevice);
-//                homeListLiveData.setValue(mListHome);
                 }
 
                 @Override
@@ -142,8 +139,6 @@ public class DeviceListViewModel extends ViewModel {
                             Log.e("deleteDevice", "error: " + e);
                         }
                     }
-//                    mListDevice.remove(device);
-////                deviceListLiveData.setValue(mListDevice);
                 }
 
                 @Override
@@ -152,5 +147,6 @@ public class DeviceListViewModel extends ViewModel {
                 }
             });
     }
+
 }
 

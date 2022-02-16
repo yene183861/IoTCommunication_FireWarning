@@ -1,14 +1,7 @@
 package vn.hust.soict.project.iotcommunication.ui;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,18 +24,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-
 import java.util.List;
 
-import vn.hust.soict.project.iotcommunication.MyService;
+//import vn.hust.soict.project.iotcommunication.MyService;
 import vn.hust.soict.project.iotcommunication.R;
 
 import vn.hust.soict.project.iotcommunication.adapter.DeviceListAdapter;
+import vn.hust.soict.project.iotcommunication.data_local.DataLocalManager;
 import vn.hust.soict.project.iotcommunication.model.Home;
 import vn.hust.soict.project.iotcommunication.model.Room;
 import vn.hust.soict.project.iotcommunication.model.Device;
@@ -57,8 +45,7 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
     private List<Device> deviceList;
     private DeviceListAdapter adapter;
     private Device deviceForEdit;
-    ImageView deviceThumbnail;
-    Room room;
+    private Room room;
 
     public ManageDeviceFragment() {
         // Required empty public constructor
@@ -70,31 +57,31 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
         mContext = context;
     }
 
-    private Messenger messenger;
-    private boolean isServiceConnected;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder iBinder) {
-            messenger = new Messenger(iBinder);
-            isServiceConnected = true;
-            sendMessageConnectMQTT();
-        }
+//    private Messenger messenger;
+//    private boolean isServiceConnected;
+//    private ServiceConnection serviceConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+//            messenger = new Messenger(iBinder);
+//            isServiceConnected = true;
+//            sendMessageConnectMQTT();
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//            messenger = null;
+//            isServiceConnected = false;
+//        }
+//    };
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            messenger = null;
-            isServiceConnected = false;
-        }
-    };
-
-    private void sendMessageConnectMQTT() {
-        Message message = Message.obtain(null, MyService.MSG_CONNECT_MQTT, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void sendMessageConnectMQTT() {
+//        Message message = Message.obtain(null, MyService.MSG_CONNECT_MQTT, 0, 0);
+//        try {
+//            messenger.send(message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Nullable
     @Override
@@ -102,9 +89,6 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
         View view = inflater.inflate(R.layout.layout_fragment_list_device, container, false);
         Bundle bundle = this.getArguments();
         room = (Room) bundle.getSerializable("room");
-        //service
-        Intent intent = new Intent(mContext, MyService.class);
-        getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         btnAddNewDevice = view.findViewById(R.id.btnAddNewDevice);
         recyclerViewDevice = view.findViewById(R.id.recyclerViewDevice);
@@ -140,28 +124,13 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
             }
         });
         return view;
-//        getActivity().unbindService(serviceConnection);
-    }
 
-    @Override
-    public void onPause() {
-        getActivity().unbindService(serviceConnection);
-        Log.e("log", "onPause");
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.e("log", "onResume");
-        Intent intent = new Intent(mContext, MyService.class);
-        getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
 //    @Override
 //    public void onDestroy() {
-//        getActivity().unbindService(serviceConnection);
-//        Log.e("log", "onDestroy");
+//        disconnectMQTT();
+//        Log.e("mqtt", "disconnect");
 //        super.onDestroy();
 //    }
 
@@ -173,15 +142,12 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
         EditText enterDevicePosition = dialogView.findViewById(R.id.enterDevicePosition);
         RadioGroup radioGroupDeviceType = dialogView.findViewById(R.id.radioGroupDeviceType);
         RadioButton radioButtonFlame = dialogView.findViewById(R.id.radioButtonFlame);
-//        RadioButton radioButtonTemperature = dialogView.findViewById(R.id.radioButtonTemperature);
         RadioButton radioButtonGas = dialogView.findViewById(R.id.radioButtonGas);
         EditText enterProducer = dialogView.findViewById(R.id.enterProducer);
         TextView btnCreateDevice = dialogView.findViewById(R.id.btnCreateDevice);
         TextView btnCancelDevice = dialogView.findViewById(R.id.btnCancelDevice);
         LinearLayout layout = dialogView.findViewById(R.id.layoutImgDevice);
-//        int deviceType = radioGroupDeviceType.getCheckedRadioButtonId();
-//        int type = 0;
-//
+        layout.setVisibility(View.GONE);
 //        //check fields empty
         if (isEdit) {
             addDeviceTitleDialog.setText("Update information Device");
@@ -189,17 +155,11 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
             enterDevicePosition.setText(deviceForEdit.getPosition());
             enterNameDevice.setText(deviceForEdit.getName());
             enterProducer.setText(deviceForEdit.getProducer());
-
-
-//            enterAreaHome.setText(String.valueOf(deviceForEdit.getArea()));
-//            enterRoom.setText(String.valueOf(deviceForEdit.getRoom()));
-//            enterFloor.setText(String.valueOf(deviceForEdit.getFloor()));
-//            enterMembers.setText(String.valueOf(deviceForEdit.getMembers()));
-//                try {
-//                    imageHome.setImageBitmap(MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), homeForEdit.getImage()));
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+            if (deviceForEdit.getType() == 1) {
+                radioGroupDeviceType.check(R.id.radioButtonFlame);
+            } else {
+                radioGroupDeviceType.check(R.id.radioButtonGas);
+            }
         }
         btnCancelDevice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,7 +185,6 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
                 } else if (roomType == R.id.radioButtonGas) {
                     type = 2;
                 }
-
                 //check fields empty
                 //call view model
                 if (isEdit) {
@@ -233,9 +192,6 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
                     deviceForEdit.setPosition(position);
                     deviceForEdit.setProducer(producer);
                     deviceForEdit.setType(type);
-//                    deviceForEdit.setFloor(floor);
-//                    deviceForEdit.setMembers(members);
-//                    deviceForEdit.setImage(img);
                     deviceListViewModel.updateDevice(deviceForEdit.getId(), deviceForEdit);
                 } else {
                     //call view model
@@ -249,68 +205,110 @@ public class ManageDeviceFragment extends Fragment implements DeviceListAdapter.
         dialogBuilder.show();
     }
 
-//    @Override
-//    public void onRoomClick(Room room) {
-//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//        ManageSensorFragment fragment = new ManageSensorFragment();
-//
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("room", room);
-//        fragment.setArguments(bundle);
-//        transaction.replace(R.id.contentFrame, fragment);
-//        transaction.addToBackStack(null);
-//        transaction.commit();
-//    }
-
     @Override
     public void onDeviceEditClick(Device device) {
         this.deviceForEdit = device;
         showAddDialog(true);
-////        home = this.homeForEdit;
-//        homeListViewModel.updateHome(homeForEdit);
     }
 
     @Override
     public void onDeviceDeleteClick(Device device) {
+        Log.e("id delete", device.getId());
         deviceListViewModel.deleteDevice(device.getId(), device);
 
     }
-//
-//    public Uri getImageUri(Context inContext, Bitmap inImage) {
-//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-//        return Uri.parse(path);
-//    }
 
-//    private void connectMQTT() {
+//    public void connectMQTT() {
 //        String clientId = MqttClient.generateClientId();
-//        MqttAndroidClient client =
-//                new MqttAndroidClient(this.getActivity().getApplicationContext(), "27.72.98.181:3307",
+//        client =
+//                new MqttAndroidClient(mContext, "tcp://27.72.98.181:3307",
 //                        clientId);
-////
-////        try {
-//            IMqttToken token = client.connect();
+//        String topic = "iot_communication";
+//        MqttConnectOptions options = new MqttConnectOptions();
+//        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
+//        options.setUserName("USERNAME");
+//        options.setPassword("USERNAME".toCharArray());
+//
+//        try {
+//            IMqttToken token = client.connect(options);
 //            token.setActionCallback(new IMqttActionListener() {
 //                @Override
 //                public void onSuccess(IMqttToken asyncActionToken) {
 //                    // We are connected
-//                    Log.d("connect MQTT", "onSuccess");
+//                    Log.e("connect mqtt", "onSuccess");
+//                    subscribeMqttChannel(topic);
 //                }
 //
 //                @Override
 //                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
 //                    // Something went wrong e.g. connection timeout or firewall problems
-//                    Log.d("connect MQTT", "onFailure");
+//                    Log.e("connect mqtt", "onFailure" + exception);
 //
 //                }
-////            });
+//            });
 //        } catch (MqttException e) {
 //            e.printStackTrace();
 //        }
 //    }
-
+//
+//    public void subscribeMqttChannel(String topicName) {
+//        try {
+//            Log.d("mqtt", "topic name: " + topicName);
+//            Log.d("mqtt", "status connect: " + client.isConnected());
+//            if (client.isConnected()) {
+//                client.subscribe(topicName, 0);
+//                client.setCallback(new MqttCallback() {
+//                    @Override
+//                    public void connectionLost(Throwable cause) {
+//                        Log.e("subscribe mqtt: ", "Connection was lost!");
+//                    }
+//
+//                    @Override
+//                    public void messageArrived(String topic, MqttMessage message) throws Exception {
+//                        Log.d("subscribe mqtt: ", "message>>" + new String(message.getPayload()));
+//                        Log.d("subscribe mqtt: ", "topic>>" + topic);
+//                        parseMqttMessage(new String(message.getPayload()));
+//
+//                    }
+//
+//                    @Override
+//                    public void deliveryComplete(IMqttDeliveryToken token) {
+//                        Log.e("subscribe mqtt: ", "Delivery Complete!");
+//                    }
+//                });
+//            }
+//        } catch (Exception e) {
+//            Log.d("subscribe mqtt: ", "Error :" + e);
+//        }
+//    }
+//
+//    private void parseMqttMessage(String s) {
+//        Log.e("message receive", s);
+//    }
+//
+//    private void disconnectMQTT() {
+//        if (client.isConnected()) {
+//            try {
+//                IMqttToken disconToken = client.disconnect();
+//                disconToken.setActionCallback(new IMqttActionListener() {
+//                    @Override
+//                    public void onSuccess(IMqttToken asyncActionToken) {
+//                        // we are now successfully disconnected
+//                        Log.e("mqtt", "disconnect success");
+//                    }
+//
+//                    @Override
+//                    public void onFailure(IMqttToken asyncActionToken,
+//                                          Throwable exception) {
+//                        Log.e("mqtt", "disconnect failed " + exception);
+//                        // something went wrong, but probably we are disconnected anyway
+//                    }
+//                });
+//            } catch (MqttException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }
 
 

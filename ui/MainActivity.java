@@ -1,110 +1,62 @@
 package vn.hust.soict.project.iotcommunication.ui;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Messenger;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import java.io.UnsupportedEncodingException;
+import org.json.JSONObject;
 
 import vn.hust.soict.project.iotcommunication.R;
-import vn.hust.soict.project.iotcommunication.model.User;
-import vn.hust.soict.project.iotcommunication.ui.ChangePasswordFragment;
-import vn.hust.soict.project.iotcommunication.ui.HomeFragment;
-import vn.hust.soict.project.iotcommunication.ui.ManageHomeFragment;
-import vn.hust.soict.project.iotcommunication.ui.MyProfileFragment;
-import vn.hust.soict.project.iotcommunication.ui.NotificationFragment;
+import vn.hust.soict.project.iotcommunication.data_local.DataLocalManager;
+import vn.hust.soict.project.iotcommunication.model.Notification;
 
 //implements NavigationView.OnNavigationItemSelectedListener
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mNavigationView;
     private FrameLayout contentFrame;
-    private ViewPager2 mViewPager2;
+    private MqttAndroidClient client;
+    private String topic = DataLocalManager.getClientId() + "rece";
     SwipeListener swipeListener;
     private static final int FRAGMENT_HOME = 0;
     private static final int FRAGMENT_NOTIFICATION = 1;
     private static final int FRAGMENT_MY_PROFILE = 2;
-//    private DrawerLayout drawerLayout;
-//    private ImageView imgAvatar;
-//    private TextView txtName, txtEmail;
-//    private NavigationView navigationView;
-//    private static final int FRAGMENT_HOME = 0;
-//    private static final int FRAGMENT_MANAGE_DEVICE = 1;
-//    private static final int FRAGMENT_NOTIFICATION = 2;
-//    private static final int FRAGMENT_MY_PROFILE = 3;
-//    private static final int FRAGMENT_CHANGE_PASSWORD = 4;
-//    private Messenger messenger;
-//    private boolean isServiceConnected;
-//    private ServiceConnection serviceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder iBinder) {
-//messenger = new Messenger(iBinder);
-//isServiceConnected = true;
-//
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName name) {
-//
-//        }
-//    };
-//    String clientId = User.getMacAddr();
-//    MqttAndroidClient client =
-//            new MqttAndroidClient(this, "tcp://broker.hivemq.com:1883",
-//                    clientId);
-//    String topic = "iot_communication";
-//    String token;
-
     private int currentFragment = FRAGMENT_HOME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        connectMQTT();
         //DRAWER
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        Intent intent = getIntent();
-//        token = intent.getStringExtra("token");
-//        Log.e("token", token);
-//        Intent intent = new Intent(this, MyService.class);
-//        bindService(intent)
         mNavigationView = findViewById(R.id.bottomNav);
         contentFrame = findViewById(R.id.contentFrame);
         replaceFragment(new ManageHomeFragment());
@@ -144,12 +96,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    private void initUi() {
-//        navigationView = findViewById(R.id.navigationView);
-//        imgAvatar = navigationView.getHeaderView(0).findViewById(R.id.imgAvatar);
-//        txtName = navigationView.getHeaderView(0).findViewById(R.id.txtName);
-//        txtEmail = navigationView.getHeaderView(0).findViewById(R.id.txtEmail);
-//    }
+
 
     private void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -186,9 +133,22 @@ public class MainActivity extends AppCompatActivity {
                                         return true;
                                     }
                                 } else {
-                                    return false;
                                     //when y > x swipe down or up
-                                }
+//                                    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+//                                        if (Math.abs(xDiff) > threshold
+//                                                && Math.abs(velocityX) > velocityThreshold) {
+//                                            if (xDiff > 0) {
+//                                                Log.e("GestureDetector", "swipe right");
+//                                                //when swiped right
+//                                            } else {
+//                                                Log.e("GestureDetector", "swipe left");
+//                                                //when swiped left
+//                                            }
+                                            return false;
+                                        //}
+
+                               // }
+                            }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -208,7 +168,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
+    @Override
+    protected void onDestroy() {
+        disconnectMQTT();
+        super.onDestroy();
+    }
+    //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
 //        return true;
@@ -248,4 +213,116 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    public void connectMQTT() {
+        String clientId = MqttClient.generateClientId();
+        client =
+                new MqttAndroidClient(this, "tcp://27.72.98.181:3307",
+                        clientId);
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
+        options.setUserName("USERNAME");
+        options.setPassword("USERNAME".toCharArray());
+
+        try {
+            IMqttToken token = client.connect(options);
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // We are connected
+                    Log.e("connect mqtt", "onSuccess");
+                    subscribe(topic);
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Log.e("connect mqtt", "onFailure" + exception);
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void subscribe(String topicName) {
+        try {
+            Log.d("mqtt", "topic name: " + topicName);
+            Log.d("mqtt", "status connect: " + client.isConnected());
+            if (client.isConnected()) {
+                client.subscribe(topicName, 0);
+                client.setCallback(new MqttCallback() {
+                    @Override
+                    public void connectionLost(Throwable cause) {
+                        Log.e("subscribe mqtt: ", "Connection was lost!");
+                    }
+
+                    @Override
+                    public void messageArrived(String topic, MqttMessage message) throws Exception {
+                        //Log.e("subscribe mqtt: ", "message>>" + new String(message.getPayload()));
+                        Log.e("subscribe mqtt: ", "topic>>" + topic);
+                        //Log.e("message", new String(message.getPayload()));
+                        //Notification notifi = parseMqttMessage(new String(message.getPayload()));
+                        //Log.e("mess",notifi.toString());
+                        JSONObject jsonObject = new JSONObject(new String(message.getPayload()));
+                        //showAlert(notifi.getContent());
+                        Gson gson=new Gson();
+                        Notification notification = gson.fromJson(jsonObject.toString(), Notification.class);
+                        Log.e("mess", notification.toString());
+                    }
+
+                    @Override
+                    public void deliveryComplete(IMqttDeliveryToken token) {
+                        Log.e("subscribe mqtt: ", "Delivery Complete!");
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.d("subscribe mqtt: ", "Error :" + e);
+        }
+    }
+
+
+    private void disconnectMQTT() {
+        if (client.isConnected()) {
+            try {
+                IMqttToken disconToken = client.disconnect();
+                disconToken.setActionCallback(new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        // we are now successfully disconnected
+                        Log.e("mqtt", "disconnect success");
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken,
+                                          Throwable exception) {
+                        Log.e("mqtt", "disconnect failed " + exception);
+                        // something went wrong, but probably we are disconnected anyway
+                    }
+                });
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void showAlert(Notification notification){
+//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        NotificationFragment fragment = new NotificationFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("notification", notification);
+        fragment.setArguments(bundle);
+//        transaction.replace(R.id.contentFrame, fragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+//        Bundle bundle = new Bundle();
+//        String str = "test";
+//        bundle.putString("test", str);
+//        fragment.setArguments(bundle);
+        replaceFragment(fragment);
+
+    }
+
 }

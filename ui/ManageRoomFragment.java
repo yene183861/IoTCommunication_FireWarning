@@ -141,18 +141,24 @@ public class ManageRoomFragment extends Fragment implements RoomListAdapter.Item
         ImageView chooseRoomThumbnail = dialogView.findViewById(R.id.chooseRoomThumbnail);
         roomThumbnail = dialogView.findViewById(R.id.roomThumbnail);
         LinearLayout layoutImgRoom = dialogView.findViewById(R.id.layoutImgRoom);
+        layoutImgRoom.setVisibility(View.GONE);
 
         if (isEdit) {
             titleDialogRoom.setText("Update information room");
             btnCreateRoom.setText("Update");
             enterOwner.setText(roomForEdit.getOwner());
             enterRoomPosition.setText(roomForEdit.getPosition());
-//            enterAddressHome.setText(roomForEdit.getAddress());
             enterRoomArea.setText(String.valueOf(roomForEdit.getArea()));
-//            enterRoom.setText(String.valueOf(roomForEdit.getRoom()));
             enterFloorRoom.setText(String.valueOf(roomForEdit.getFloor()));
+            switch (roomForEdit.getType()){
+                case 1: radioGroupRoomType.check(R.id.radioButtonLivingRoom); break;
+                case 2: radioGroupRoomType.check(R.id.radioButtonBedroom); break;
+                case 3: radioGroupRoomType.check(R.id.radioButtonKitchen); break;
+                case 4: radioGroupRoomType.check(R.id.radioButtonDinnerRoom); break;
+                case 5: radioGroupRoomType.check(R.id.radioButtonBathroom); break;
+            }
 //            enterMembers.setText(String.valueOf(roomForEdit.getMembers()));
-//            layoutImgRoom.setVisibility(View.GONE);
+            //layoutImgRoom.setVisibility(View.GONE);
 //                try {
 //                    imageHome.setImageBitmap(MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), homeForEdit.getImage()));
 //                } catch (IOException e) {
@@ -182,11 +188,8 @@ public class ManageRoomFragment extends Fragment implements RoomListAdapter.Item
             public void onClick(View v) {
                 String owner = enterOwner.getText().toString().trim();
                 String position = enterRoomPosition.getText().toString().trim();
-//                String addr = enterAddressHome.getText().toString().trim();
                 int area = Integer.parseInt(enterRoomArea.getText().toString().trim());
-//                int room = Integer.parseInt(enterRoom.getText().toString().trim());
                 int floor = Integer.parseInt(enterFloorRoom.getText().toString().trim());
-//                int members = Integer.parseInt(enterMembers.getText().toString().trim());
                 int roomType = radioGroupRoomType.getCheckedRadioButtonId();
                 Log.e("room", " " + roomType);
                 int type = 1;
@@ -219,17 +222,12 @@ public class ManageRoomFragment extends Fragment implements RoomListAdapter.Item
                     roomForEdit.setPosition(position);
                     roomForEdit.setArea(area);
                     roomForEdit.setFloor(floor);
-//                    roomForEdit.setMembers(members);
-//                    roomForEdit.setImage(img);
                     roomListViewModel.updateRoom(roomForEdit.getId(), roomForEdit);
                 } else {
                     Log.e("type", " " + type);
                     //call view model
-//                    Home room = new Room(user, name, addr, area, room, floor, members, img);
-//                    roomListViewModel.insertRoom(room);
                     Room room = new Room(home.getId(), type, floor, area, position, owner, "null");
                     roomListViewModel.insertRoom(room);
-//                    img = null;
                 }
                 dialogBuilder.dismiss();
             }
@@ -296,8 +294,6 @@ public class ManageRoomFragment extends Fragment implements RoomListAdapter.Item
     public void onRoomEditClick(Room room) {
         this.roomForEdit = room;
         showAddDialog(true);
-////        home = this.homeForEdit;
-//        homeListViewModel.updateHome(homeForEdit);
     }
 
     @Override

@@ -80,14 +80,14 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.de
 
     public class deviceViewHolder extends RecyclerView.ViewHolder {
         private ImageView imgDevice, imgEditDevice, imgDeleteDevice;
-        private TextView tvValue, tvDeviceName, tvDevicePosition;
+        private TextView  tvDeviceName, tvDevicePosition;
         public deviceViewHolder(@NonNull View itemView) {
             super(itemView);
             imgDevice= itemView.findViewById(R.id.imgDevice);
             imgEditDevice = itemView.findViewById(R.id.imgEditDevice);
             imgDeleteDevice = itemView.findViewById(R.id.imgDeleteDevice);
             tvDeviceName = itemView.findViewById(R.id.tvDeviceName);
-            tvValue = itemView.findViewById(R.id.tvValue);
+            //tvValue = itemView.findViewById(R.id.tvValue);
             tvDevicePosition = itemView.findViewById(R.id.tvDevicePosition);
         }
     }

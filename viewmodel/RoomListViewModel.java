@@ -138,7 +138,6 @@ public class RoomListViewModel extends ViewModel {
                         Log.e("deleteRoom", "error: " + e);
                     }
                 }
-//
             }
 
             @Override
@@ -146,7 +145,5 @@ public class RoomListViewModel extends ViewModel {
                 Log.e("deleteRoom", "delete room failed " + t);
             }
         });
-//        mListRoom.remove(room);
-//        roomListLiveData.setValue(mListRoom);
     }
 }

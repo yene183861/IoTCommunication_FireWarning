@@ -82,7 +82,7 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
         recyclerView.setAdapter(adapter);
 
         homeListViewModel = new ViewModelProvider(this).get(HomeListViewModel.class);
-
+        homeListViewModel.getHomeList();
         homeListViewModel.getHomesListObserver().observe(getViewLifecycleOwner(), new Observer<List<Home>>() {
             @Override
             public void onChanged(List<Home> homes) {
@@ -98,7 +98,7 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
 
             }
         });
-        homeListViewModel.getHomeList();
+        //homeListViewModel.getHomeList();
 
         btnAddNew.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +125,7 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
         ImageView chooseHomeImage = dialogView.findViewById(R.id.chooseHomeImage);
         imageHome = dialogView.findViewById(R.id.imageHome);
         LinearLayout layout = dialogView.findViewById(R.id.layoutImgHome);
-        //layout.setVisibility(View.GONE);
+        layout.setVisibility(View.GONE);
 
         if(isEdit){
             addHomeTitleDialog.setText("Update information home");
@@ -137,7 +137,7 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
             enterRooms.setText(String.valueOf(homeForEdit.getRooms()));
             enterFloor.setText(String.valueOf(homeForEdit.getFloor()));
             enterMembers.setText(String.valueOf(homeForEdit.getMembers()));
-//            layout.setVisibility(View.GONE);
+ //           layout.setVisibility(View.GONE);
 //                try {
 //                    imageHome.setImageBitmap(MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), homeForEdit.getImage()));
 //                } catch (IOException e) {
@@ -177,11 +177,7 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
                     homeForEdit.setFloor(floor);
                     homeForEdit.setMembers(members);
                     homeForEdit.setRooms(rooms);
-
-
-//                    homeForEdit.setImage(img);
                    homeListViewModel.updateHome(homeForEdit.getId(), homeForEdit);
-                //    Log.e("id", homeForEdit.getId());
                 } else {
                     //call view model
                     Home home = new Home(name, addr, area, rooms, floor, members, null);
@@ -220,7 +216,6 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
                 .show(new TedBottomSheetDialogFragment.OnImageSelectedListener() {
                     @Override
                     public void onImageSelected(Uri uri) {
-                        // here is selected image uri
                         Bitmap bitmap = null;
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
@@ -232,6 +227,21 @@ public class ManageHomeFragment extends Fragment implements HomeListAdapter.Item
                         }
                     }
                 });
+//                {
+//                    @Override
+//                    public void onImageSelected(Uri uri) {
+//                        // here is selected image uri
+//                        Bitmap bitmap = null;
+//                        try {
+//                            bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+//                            imageHome.setImageBitmap(bitmap);
+//                            imageHome.setVisibility(View.VISIBLE);
+//                            img = getImageUri(mContext, bitmap);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
     }
 
     @Override

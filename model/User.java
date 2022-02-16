@@ -25,12 +25,13 @@ public class User {
     private String email;
     private String password;
 
-    public User(String email, String password) {
-        this.deviceType = 3;
+    public User(String email, String password, String fcmToken) {
+        this.deviceType = 2;
         this.deviceId = "20183825";
         this.versionCode = "1.0.0";
         this.signature = "1";
         this.email = email;
+        this.fcmToken = DataLocalManager.getFCMToken();
         this.password = password;
     }
 
@@ -38,10 +39,10 @@ public class User {
     public User(String id,String name, int deviceType, String deviceId, String versionCode, String deviceName, String fcmToken, String signature, String email, String password) {
         this.name = name;
         this.id = id;
+        this.fcmToken = fcmToken;
         //this.deviceId = getMacAddr();
         //this.fcmToken = DataLocalManager.getTokenFCM();
         //this.deviceName = getDeviceName();
-        this.deviceType = deviceType;
         this.deviceId = deviceId;
         this.versionCode = versionCode;
         this.deviceName = deviceName;

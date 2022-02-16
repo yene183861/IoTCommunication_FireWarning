@@ -15,6 +15,8 @@ import retrofit2.http.Query;
 import vn.hust.soict.project.iotcommunication.model.DeviceList;
 import vn.hust.soict.project.iotcommunication.model.Home;
 import vn.hust.soict.project.iotcommunication.model.HomeList;
+import vn.hust.soict.project.iotcommunication.model.Notification;
+import vn.hust.soict.project.iotcommunication.model.NotificationResponse;
 import vn.hust.soict.project.iotcommunication.model.Room;
 import vn.hust.soict.project.iotcommunication.model.RoomList;
 import vn.hust.soict.project.iotcommunication.model.Device;
@@ -80,5 +82,7 @@ public interface ApiService {
     @DELETE("/device/{id}")
     Call<Void> deleteDevice(@Header("x-access-token") String token, @Path("id") String id);
 
+    @GET("/warning")
+    Call<NotificationResponse> getNotificationList(@Header("x-access-token") String token);
 
 }

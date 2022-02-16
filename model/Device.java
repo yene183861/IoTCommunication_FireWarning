@@ -9,7 +9,7 @@ public class Device {
     private int type;
     private String room;
     private String thumbnail;
-    private int value;
+//    private int value;
     private String position;
     private String producer;
 
@@ -31,13 +31,13 @@ public class Device {
 //        this.producer = producer;
 //    }
 
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
+//    public int getValue() {
+//        return value;
+//    }
+//
+//    public void setValue(int value) {
+//        this.value = value;
+//    }
 
     public Device(String id, String name, int type, String room, String thumbnail, String position, String producer) {
         this.id = id;
@@ -121,7 +121,6 @@ public class Device {
                 ", type=" + type +
                 ", room='" + room + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
-                ", value=" + value +
                 ", position='" + position + '\'' +
                 ", producer='" + producer + '\'' +
                 '}';

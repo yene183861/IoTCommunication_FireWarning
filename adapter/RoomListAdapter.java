@@ -45,12 +45,9 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.roomVi
 
     @Override
     public void onBindViewHolder(@NonNull roomViewHolder holder, @SuppressLint("RecyclerView") int position) {
-//        int type = this.roomList.get(position).getType();
-//        holder.tvRoomName.setText(this.roomList.get(position).getType());
         String owner = this.roomList.get(position).getOwner();
         holder.tvRoomPosition.setText(this.roomList.get(position).getPosition());
         holder.tvRoomOwner.setText("Owner: " + owner);
-//        if(this.roomList.get(position).getThumbnail() == null){
             int type = this.roomList.get(position).getType();
             switch (type){
                 case 1 : holder.imgRoom.setImageResource(R.drawable.living_room);
@@ -58,7 +55,6 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.roomVi
                     break;
                 case 2 : holder.imgRoom.setImageResource(R.drawable.bedroom2);
                     holder.tvRoomName.setText(owner + "'s bed room");
-//                    holder.tvRoomName.setText(holder.tvRoomOwner.setText(owner + "'s bed room"));
                     break;
                 case 3 : holder.imgRoom.setImageResource(R.drawable.kitchen);
                     holder.tvRoomName.setText("Kitchen");break;
